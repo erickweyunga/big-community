@@ -123,9 +123,11 @@ const Page: React.FC = () => {
                                 handlePhoneNumberChange(unmasked);
                             }}
                             mask={TANZANIA_MASK}
-                            placeholder="+255 123 456 789"
+                            placeholder="+255 phone number"
                             style={styles.phoneInput}
-                            keyboardType="phone-pad"
+                            autoFocus
+                            placeholderTextColor={Colors.gray}
+                            keyboardType="numeric"
                         />
                     </View>
                     {validationError ? (
@@ -182,8 +184,10 @@ const styles = StyleSheet.create({
     list: {
         backgroundColor: '#f0f0f0',
         width: '100%',
-        padding: 20,
-        borderRadius: 12,
+        padding: 12,
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: Colors.lightGray,
+        borderRadius: 5,
     },
     listItem: {
         flexDirection: 'row',
@@ -198,7 +202,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     phoneInputContainer: {
-        paddingVertical: 8,
+        paddingVertical: 0,
     },
     phoneInput: {
         fontSize: 18,
@@ -236,8 +240,8 @@ const styles = StyleSheet.create({
     errorText: {
         color: 'red',
         fontSize: 14,
-        marginTop: 4,
-        marginBottom: 4,
+        marginTop: 2,
+        marginBottom: 2,
     },
 });
 
