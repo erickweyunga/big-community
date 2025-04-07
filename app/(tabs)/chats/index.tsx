@@ -8,13 +8,13 @@ import ChatRow from '@/components/ChatRow';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FlatList } from 'react-native-gesture-handler';
 
-interface CustomSearchBarProps {
+interface SearchBarProps {
     value: string;
     onChangeText: (text: string) => void;
     placeholder: string;
 }
 
-const CustomSearchBar: React.FC<CustomSearchBarProps> = ({
+const SearchBar: React.FC<SearchBarProps> = ({
     value,
     onChangeText,
     placeholder
@@ -62,7 +62,6 @@ const Page = () => {
     const updateSearch = useCallback((text: string): void => {
         setSearch(text);
 
-        // Filter the chats based on search text
         if (text) {
             const filtered = chats.filter(
                 chat =>
@@ -78,7 +77,7 @@ const Page = () => {
     return (
         <View style={defaultStyles.container}>
             <View style={styles.searchWrapper}>
-                <CustomSearchBar
+                <SearchBar
                     value={search}
                     onChangeText={updateSearch}
                     placeholder="Search messages"
@@ -113,6 +112,8 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.backgroundLight,
         paddingHorizontal: 16,
         paddingVertical: 8,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: Colors.divider,
     },
     searchBarContainer: {
         width: '100%',

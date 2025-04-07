@@ -6,7 +6,6 @@ import { GestureResponderEvent, Platform, TouchableOpacity } from "react-native"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 
 const Layout = () => {
-    // Common screen options
     const commonScreenOptions = {
         headerStyle: {
             backgroundColor: Colors.backgroundLight,

@@ -1,60 +1,77 @@
 import { Tabs } from "expo-router";
-import { FontAwesome, FontAwesome6, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Colors from "@/constants/Colors";
+import { SafeAreaView, Platform, View } from "react-native";
+import CustomTabBar from "@/components/BottomBar";
 
 const Layout = () => {
     return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <Tabs
-                screenOptions={{
-                    tabBarStyle: {
-                        backgroundColor: Colors.backgroundLight,
-                    },
-                    tabBarActiveTintColor: Colors.primary,
-                    tabBarActiveBackgroundColor: Colors.backgroundLight,
-                    tabBarInactiveBackgroundColor: Colors.backgroundLight,
-                    headerStyle: {
-                        backgroundColor: Colors.backgroundLight,
-                    },
-                    headerShadowVisible: false,
-                }}
-            >
-                <Tabs.Screen name="updates" options={{
-                    title: "Updates",
-                    tabBarIcon: ({ size, color }: { size: number; color: string; }) => (
-                        <MaterialIcons name="update" size={size} color={color} />
-                    ),
-                }} />
-                <Tabs.Screen name="space" options={{
-                    title: "Spaces",
-                    tabBarIcon: ({ size, color }: { size: number; color: string; }) => (
-                        <FontAwesome6 name="microphone-lines" size={size} color={color} />
-                    ),
-                }} />
-                <Tabs.Screen name="chats" options={{
-                    title: "Chats",
-                    headerShown: false,
-                    tabBarIcon: ({ size, color }: { size: number; color: string; }) => (
-                        <Ionicons name="chatbubbles-outline" size={size} color={color} />
-                    ),
-                }} />
-                <Tabs.Screen name="communities" options={{
-                    title: "Communities",
-                    tabBarIcon: ({ size, color }: { size: number; color: string; }) => (
-                        <MaterialIcons name="people-outline" size={size} color={color} />
-                    ),
-                }} />
-                <Tabs.Screen name="settings" options={{
-                    title: "Settings",
-                    headerShown: false,
-                    tabBarIcon: ({ size, color }: { size: number; color: string; }) => (
-                        <Ionicons name="cog-outline" size={size} color={color} />
-                    ),
-                }} />
-            </Tabs>
-        </GestureHandlerRootView>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.backgroundLight }}>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <Tabs
+                    screenOptions={{
+                        // Content area styling
+                        headerStyle: {
+                            backgroundColor: Colors.backgroundLight,
+                        },
+                        headerShadowVisible: false,
+                        headerShown: true,
+
+                        // Tab bar styling (hidden because we're using a custom one)
+                        tabBarStyle: {
+                            display: 'none' // Hide the default tab bar
+                        },
+
+                        // Transition animations for screen content
+                        animation: Platform.OS === 'ios' ? 'default' : 'fade',
+                        ...Platform.select({
+                            ios: {
+                                presentation: 'card',
+                            },
+                            android: {
+                                presentation: 'transparentModal',
+                            },
+                        }),
+                    }}
+                    // Use our custom tab bar component
+                    tabBar={(props) => <CustomTabBar {...props} />}
+                >
+                    <Tabs.Screen
+                        name="updates"
+                        options={{
+                            title: "Updates",
+                        }}
+                    />
+                    <Tabs.Screen
+                        name="space"
+                        options={{
+                            title: "Spaces",
+                        }}
+                    />
+                    <Tabs.Screen
+                        name="chats"
+                        options={{
+                            title: "Chats",
+                            headerShown: false,
+                        }}
+                    />
+                    <Tabs.Screen
+                        name="communities"
+                        options={{
+                            title: "Communities",
+                        }}
+                    />
+                    <Tabs.Screen
+                        name="settings"
+                        options={{
+                            title: "Settings",
+                            headerShown: false,
+                        }}
+                    />
+                </Tabs>
+            </GestureHandlerRootView>
+        </SafeAreaView>
     );
-}
+};
 
 export default Layout;
