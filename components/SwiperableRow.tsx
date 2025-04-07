@@ -1,136 +1,177 @@
-import { View, Text, Animated, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Animated, StyleSheet, TouchableOpacity, I18nManager } from 'react-native';
 import React, { useRef } from 'react';
-import { PanGestureHandler, GestureHandlerStateChangeEvent, PanGestureHandlerEventPayload } from 'react-native-gesture-handler';
+import {
+    PanGestureHandler,
+    State,
+    GestureHandlerRootView
+} from 'react-native-gesture-handler';
 
-const SWIPE_THRESHOLD = -120;
+const ACTION_WIDTH = 70;
 
 interface SwipeableRowProps {
-  children: React.ReactNode;
-  onDelete?: () => void;
-  onArchive?: () => void;
+    children: React.ReactNode;
+    onDelete?: () => void;
+    onArchive?: () => void;
 }
 
 const SwipeableRow: React.FC<SwipeableRowProps> = ({ children, onDelete, onArchive }) => {
-  const translateX = useRef(new Animated.Value(0)).current;
-  
-  const onGestureEvent = Animated.event<PanGestureHandlerEventPayload>(
-    [{ nativeEvent: { translationX: translateX } }],
-    { useNativeDriver: true }
-  );
+    const totalActionsWidth = (onArchive ? ACTION_WIDTH : 0) + (onDelete ? ACTION_WIDTH : 0);
 
-  const onHandlerStateChange = (event: GestureHandlerStateChangeEvent) => {
-    if (event.nativeEvent.oldState === 4) {
-      const dragX = event.nativeEvent.translationX as number;
-      
-      if (dragX < SWIPE_THRESHOLD) {
-        Animated.timing(translateX, {
-          toValue: -120,
-          duration: 200,
-          useNativeDriver: true
-        }).start();
-      } else {
+    const translateX = useRef(new Animated.Value(0)).current;
+    const rowHeight = useRef(new Animated.Value(0)).current;
+
+    const isOpen = useRef(false);
+
+    const direction = I18nManager.isRTL ? -1 : 1;
+
+    const onGestureEvent = Animated.event(
+        [{ nativeEvent: { translationX: translateX } }],
+        { useNativeDriver: true }
+    );
+
+    const onHandlerStateChange = ({ nativeEvent }: any) => {
+        if (nativeEvent.oldState === State.ACTIVE) {
+            const dragX = nativeEvent.translationX * direction;
+            const dragVelocity = nativeEvent.velocityX * direction;
+
+            const dragThreshold = -totalActionsWidth * 0.5;
+
+            const shouldOpen =
+                !isOpen.current && (dragX < dragThreshold || dragVelocity < -500) ||
+                isOpen.current && dragX > -totalActionsWidth * 0.75;
+
+            if (shouldOpen) {
+                isOpen.current = true;
+                Animated.spring(translateX, {
+                    toValue: -totalActionsWidth * direction,
+                    useNativeDriver: true,
+                    bounciness: 0,
+                    speed: 20
+                }).start();
+            } else {
+                isOpen.current = false;
+                Animated.spring(translateX, {
+                    toValue: 0,
+                    useNativeDriver: true,
+                    bounciness: 0,
+                    speed: 20
+                }).start();
+            }
+        }
+    };
+
+    const closeRow = () => {
+        isOpen.current = false;
         Animated.spring(translateX, {
-          toValue: 0,
-          useNativeDriver: true
+            toValue: 0,
+            useNativeDriver: true,
+            bounciness: 0,
+            speed: 20
         }).start();
-      }
-    }
-  };
+    };
 
-  const reset = (): void => {
-    Animated.spring(translateX, {
-      toValue: 0,
-      useNativeDriver: true
-    }).start();
-  };
+    const trans = translateX.interpolate({
+        inputRange: [-totalActionsWidth * 2, 0, 1],
+        outputRange: [-totalActionsWidth, 0, 0],
+        extrapolate: 'clamp',
+    });
 
-  const limitedTranslateX = translateX.interpolate({
-    inputRange: [-100, 0],
-    outputRange: [-120, 0],
-    extrapolate: 'clamp',
-  });
+    const renderActions = () => {
+        const actions = [];
+        let rightOffset = 0;
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.actionsContainer}>
-        {onArchive && (
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.archiveButton]} 
-            onPress={() => {
-              onArchive();
-              reset();
-            }}
-          >
-            <Text style={styles.actionText}>Archive</Text>
-          </TouchableOpacity>
-        )}
-        
-        {onDelete && (
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.deleteButton]} 
-            onPress={() => {
-              onDelete();
-              reset();
-            }}
-          >
-            <Text style={styles.actionText}>Delete</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-      
-      <PanGestureHandler
-        onGestureEvent={onGestureEvent}
-        onHandlerStateChange={onHandlerStateChange}
-      >
-        <Animated.View 
-          style={[
-            styles.rowContent, 
-            { transform: [{ translateX: limitedTranslateX }] }
-          ]}
-        >
-          {children}
-        </Animated.View>
-      </PanGestureHandler>
-    </View>
-  );
+        if (onArchive) {
+            actions.push(
+                <Animated.View
+                    key="archive"
+                    style={[
+                        styles.actionButton,
+                        styles.archiveButton,
+                        { right: rightOffset }
+                    ]}
+                >
+                    <TouchableOpacity
+                        style={styles.actionButtonInner}
+                        onPress={() => {
+                            if (onArchive) onArchive();
+                            closeRow();
+                        }}
+                    >
+                        <Text style={styles.actionText}>Archive</Text>
+                    </TouchableOpacity>
+                </Animated.View>
+            );
+            rightOffset += ACTION_WIDTH;
+        }
+
+        return actions;
+    };
+
+    return (
+        <GestureHandlerRootView style={styles.container}>
+            <Animated.View style={styles.container} onLayout={({ nativeEvent }) => {
+                rowHeight.setValue(nativeEvent.layout.height);
+            }}>
+                <View style={[styles.actionsContainer]}>
+                    {renderActions()}
+                </View>
+
+                <PanGestureHandler
+                    activeOffsetX={[-10, 10]}
+                    failOffsetY={[-10, 10]}
+                    onGestureEvent={onGestureEvent}
+                    onHandlerStateChange={onHandlerStateChange}
+                >
+                    <Animated.View
+                        style={[
+                            styles.rowContent,
+                            {
+                                transform: [{ translateX: trans }],
+                            }
+                        ]}
+                    >
+                        {children}
+                    </Animated.View>
+                </PanGestureHandler>
+            </Animated.View>
+        </GestureHandlerRootView>
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  rowContent: {
-    backgroundColor: 'white',
-    width: '100%',
-    zIndex: 2,
-  },
-  actionsContainer: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    bottom: 0,
-    flexDirection: 'row',
-    zIndex: 1,
-  },
-  actionButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 60,
-    height: '100%',
-  },
-  archiveButton: {
-    backgroundColor: '#4a98f7',
-  },
-  deleteButton: {
-    backgroundColor: '#ff3b30',
-  },
-  actionText: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 14,
-  }
+    container: {
+        width: '100%',
+    },
+    rowContent: {
+        width: '100%',
+        backgroundColor: 'white',
+    },
+    actionsContainer: {
+        position: 'absolute',
+        right: 0,
+        left: 0,
+        top: 0,
+        bottom: 0,
+    },
+    actionButton: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        width: ACTION_WIDTH,
+    },
+    actionButtonInner: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    archiveButton: {
+        backgroundColor: '#4a98f7',
+    },
+    actionText: {
+        color: 'white',
+        fontWeight: '600',
+        fontSize: 14,
+    }
 });
 
 export default SwipeableRow;

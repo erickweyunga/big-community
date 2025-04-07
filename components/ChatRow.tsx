@@ -24,6 +24,7 @@ const ChatRow = ({ id, from, date, img, msg, read, unreadCount }: ChatRowProps) 
 
     return (
         <SwipeableRow
+            key={id}
             onDelete={() => console.log('Delete chat', id)}
             onArchive={() => console.log('Archive chat', id)}
         >

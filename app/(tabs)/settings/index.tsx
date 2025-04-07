@@ -38,8 +38,7 @@ const Page = () => {
                 ]
             );
         } else {
-            // Navigate to respective screens
-            router.push(`/settings/${id}`);
+            router.push(`/`);
         }
     };
 
@@ -92,16 +91,15 @@ const Page = () => {
     );
 };
 
-// Convert to StyleSheet for type safety
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.backgroundLight || '#f8f8f8',
+        backgroundColor: Colors.backgroundLight,
         paddingTop: 10
     },
     sectionTitle: {
         fontSize: 17,
-        fontWeight: '600', // Fixed: String instead of number
+        fontWeight: '600',
         marginHorizontal: 16,
         marginBottom: 8,
         color: Colors.gray
