@@ -1,8 +1,9 @@
-import { View, Text, TouchableHighlight, Image, StyleSheet, Pressable } from 'react-native'
+import { View, Text, TouchableHighlight, Image, StyleSheet } from 'react-native'
 import React from 'react'
 import { useRouter } from 'expo-router'
 import Colors from '@/constants/Colors'
 import { format } from 'date-fns'
+import { defaultStyles } from '@/constants/Styles'
 import SwipeableRow from './SwiperableRow'
 
 interface ChatRowProps {
@@ -19,12 +20,11 @@ const ChatRow = ({ id, from, date, img, msg, read, unreadCount }: ChatRowProps) 
     const router = useRouter();
 
     const handlePress = () => {
-        router.push(`/`);
+        router.push(`/chat/${id}`);
     };
 
     return (
         <SwipeableRow
-            key={id}
             onDelete={() => console.log('Delete chat', id)}
             onArchive={() => console.log('Archive chat', id)}
         >
@@ -33,23 +33,24 @@ const ChatRow = ({ id, from, date, img, msg, read, unreadCount }: ChatRowProps) 
                 underlayColor={Colors.lightGray}
                 onPress={handlePress}
             >
-                <View style={styles.container}>
+                <View style={[defaultStyles.item, styles.container]}>
                     <Image
                         source={{ uri: img }}
                         style={styles.avatar}
                     />
                     <View style={styles.contentContainer}>
-                        <View style={styles.topRow}>
-                            <Text style={styles.name}>{from}</Text>
-                            <Text style={styles.date}>
+                        <View style={defaultStyles.rowBetween}>
+                            <Text style={defaultStyles.subtitle}>{from}</Text>
+                            <Text style={[defaultStyles.caption, styles.date]}>
                                 {format(new Date(date), 'MM/dd/yy')}
                             </Text>
                         </View>
-                        <View style={styles.bottomRow}>
+                        <View style={defaultStyles.rowBetween}>
                             <Text
                                 style={[
-                                    styles.message,
-                                    !read && styles.unreadMessage
+                                    defaultStyles.body,
+                                    !read && styles.unreadMessage,
+                                    styles.message
                                 ]}
                                 numberOfLines={1}
                                 ellipsizeMode="tail"
@@ -73,9 +74,9 @@ const ChatRow = ({ id, from, date, img, msg, read, unreadCount }: ChatRowProps) 
 
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 12,
+        paddingVertical: 12,
+        paddingHorizontal: 12,
+        backgroundColor: Colors.background,
     },
     avatar: {
         width: 50,
@@ -87,28 +88,11 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
     },
-    topRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 4,
-    },
-    bottomRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    name: {
-        fontSize: 16,
-        fontWeight: '600',
-    },
     date: {
-        fontSize: 12,
-        color: Colors.gray,
+        marginLeft: 8,
     },
     message: {
-        fontSize: 14,
-        color: Colors.gray,
+        marginTop: 4,
         flex: 1,
         marginRight: 8,
     },

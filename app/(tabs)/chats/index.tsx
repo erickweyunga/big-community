@@ -1,14 +1,63 @@
 import Colors from '@/constants/Colors';
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, SafeAreaView, StatusBar, FlatList } from 'react-native';
-import { SearchBar } from 'react-native-elements';
+import { View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import chats from '../../../assets/data/chats.json';
 import { defaultStyles } from '@/constants/Styles';
 import ChatRow from '@/components/ChatRow';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { FlatList } from 'react-native-gesture-handler';
+
+interface CustomSearchBarProps {
+    value: string;
+    onChangeText: (text: string) => void;
+    placeholder: string;
+}
+
+const CustomSearchBar: React.FC<CustomSearchBarProps> = ({
+    value,
+    onChangeText,
+    placeholder
+}) => {
+    return (
+        <View style={styles.searchBarContainer}>
+            <View style={styles.searchInputWrapper}>
+                <Ionicons
+                    name="search"
+                    size={20}
+                    color={Colors.gray}
+                    style={styles.searchIcon}
+                />
+                <TextInput
+                    style={styles.searchInput}
+                    value={value}
+                    onChangeText={onChangeText}
+                    placeholder={placeholder}
+                    placeholderTextColor={Colors.gray}
+                    returnKeyType="search"
+                    clearButtonMode="while-editing"
+                />
+                {value.length > 0 && (
+                    <TouchableOpacity
+                        onPress={() => onChangeText('')}
+                        style={styles.clearButton}
+                    >
+                        <Ionicons
+                            name="close-circle"
+                            size={20}
+                            color={Colors.gray}
+                        />
+                    </TouchableOpacity>
+                )}
+            </View>
+        </View>
+    );
+};
 
 const Page = () => {
     const [search, setSearch] = useState('');
     const [filteredChats, setFilteredChats] = useState(chats);
+    const insets = useSafeAreaInsets();
 
     const updateSearch = useCallback((text: string): void => {
         setSearch(text);
@@ -27,82 +76,66 @@ const Page = () => {
     }, []);
 
     return (
-        <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="dark-content" />
-
+        <View style={defaultStyles.container}>
             <View style={styles.searchWrapper}>
-                <SearchBar
-                    platform="default"
-                    containerStyle={styles.searchContainer}
-                    inputContainerStyle={styles.searchInputContainer}
-                    leftIconContainerStyle={styles.searchIconContainer}
-                    rightIconContainerStyle={styles.searchIconContainer}
-                    searchIcon={{ name: 'search', color: Colors.primary }}
-                    clearIcon={{ name: 'clear', color: Colors.primary }}
-                    inputStyle={styles.searchInput}
-                    placeholderTextColor={Colors.gray}
-                    placeholder="Search messages"
-                    onChangeText={updateSearch}
+                <CustomSearchBar
                     value={search}
-                    cancelButtonProps={{ color: Colors.primary }}
-                    round
+                    onChangeText={updateSearch}
+                    placeholder="Search messages"
                 />
             </View>
 
             <FlatList
                 data={filteredChats}
                 keyExtractor={(item) => item.id.toString()}
-                ItemSeparatorComponent={() => <View style={[defaultStyles.separator, styles.separator]} />}
+                ItemSeparatorComponent={() => (
+                    <View style={defaultStyles.separator} />
+                )}
                 renderItem={({ item }) => (
                     <ChatRow {...item} />
                 )}
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.listContent}
-                style={styles.flatList}
+                contentContainerStyle={[
+                    defaultStyles.contentContainer,
+                    { paddingBottom: Math.max(insets.bottom, 16) }
+                ]}
+                style={defaultStyles.flex1}
                 initialNumToRender={10}
                 removeClippedSubviews={true}
             />
-        </SafeAreaView>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.backgroundLight,
-    },
     searchWrapper: {
         zIndex: 1,
         backgroundColor: Colors.backgroundLight,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
     },
-    searchContainer: {
-        backgroundColor: Colors.backgroundLight,
-        borderBottomWidth: 0,
-        borderTopWidth: 0,
-        paddingHorizontal: 10,
-        paddingTop: 10,
-        paddingBottom: 5,
+    searchBarContainer: {
+        width: '100%',
     },
-    searchInputContainer: {
+    searchInputWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
         backgroundColor: 'white',
         borderRadius: 10,
         height: 40,
+        paddingHorizontal: 12,
     },
-    searchIconContainer: {
-        backgroundColor: 'white',
+    searchIcon: {
+        marginRight: 8,
     },
     searchInput: {
-        color: '#000',
-        fontSize: 16,
-    },
-    separator: {
-        marginLeft: 74,
-    },
-    listContent: {
-        paddingBottom: 20,
-    },
-    flatList: {
         flex: 1,
+        height: 40,
+        fontSize: 16,
+        color: '#000',
+    },
+    clearButton: {
+        padding: 4,
     }
 });
 

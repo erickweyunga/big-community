@@ -6,6 +6,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, Text, FlatList, Alert, TouchableOpacity, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface SettingsItem {
     id: string;
@@ -19,6 +20,7 @@ interface SettingsItem {
 const Page = () => {
     const { signOut } = useAuth();
     const router = useRouter();
+    const insets = useSafeAreaInsets();
 
     const handleItemPress = (id: string) => {
         if (id === 'signout') {
@@ -38,13 +40,13 @@ const Page = () => {
                 ]
             );
         } else {
-            router.push(`/`);
+            router.push(`/settings/${id}`);
         }
     };
 
     const renderSection = (title: string, data: SettingsItem[]) => (
-        <View style={defaultStyles.block}>
-            <Text style={styles.sectionTitle}>{title}</Text>
+        <View style={[defaultStyles.block, defaultStyles.mb3]}>
+            <Text style={defaultStyles.sectionTitle}>{title}</Text>
             <FlatList
                 data={data}
                 scrollEnabled={false}
@@ -52,6 +54,7 @@ const Page = () => {
                 renderItem={({ item }) => (
                     <TouchableOpacity
                         style={defaultStyles.item}
+                        activeOpacity={0.7}
                         onPress={() => handleItemPress(item.id)}
                     >
                         <BoxedIcon
@@ -63,25 +66,39 @@ const Page = () => {
                                 )
                             }
                         />
-                        <View style={styles.itemContent}>
-                            <Text style={styles.itemTitle}>{item.title}</Text>
+                        <View style={defaultStyles.flex1}>
+                            <Text
+                                style={[
+                                    defaultStyles.subtitle,
+                                    item.id === 'signout' && { color: Colors.error || '#FF3B30' }
+                                ]}
+                            >
+                                {item.title}
+                            </Text>
                             {item.description && (
-                                <Text style={styles.itemDescription}>{item.description}</Text>
+                                <Text style={[defaultStyles.caption, defaultStyles.mt1]}>
+                                    {item.description}
+                                </Text>
                             )}
                         </View>
-                        <Ionicons name='chevron-forward' size={20} color={Colors.gray} style={styles.chevron} />
+                        <Ionicons name='chevron-forward' size={20} color={Colors.gray} />
                     </TouchableOpacity>
                 )}
+                contentContainerStyle={styles.listContent}
             />
         </View>
     );
 
     return (
-        <View style={styles.container}>
+        <View style={defaultStyles.container}>
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentInsetAdjustmentBehavior='automatic'
-                contentContainerStyle={{ paddingBottom: 20 }}
+                contentContainerStyle={[
+                    defaultStyles.contentContainer,
+                    defaultStyles.px3,
+                    { paddingBottom: Math.max(insets.bottom, 16) }
+                ]}
             >
                 {renderSection('Account', accountSettings)}
                 {renderSection('Preferences', preferencesSettings)}
@@ -92,34 +109,10 @@ const Page = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.backgroundLight,
-        paddingTop: 10
-    },
-    sectionTitle: {
-        fontSize: 17,
-        fontWeight: '600',
-        marginHorizontal: 16,
-        marginBottom: 8,
-        color: Colors.gray
-    },
-    itemContent: {
-        flex: 1,
-        marginLeft: 12
-    },
-    itemTitle: {
-        fontSize: 16,
-        color: '#000'
-    },
-    itemDescription: {
-        fontSize: 13,
-        color: Colors.gray,
-        marginTop: 2
-    },
-    chevron: {
-        position: 'absolute',
-        right: 10
+    listContent: {
+        backgroundColor: Colors.background,
+        borderRadius: 12,
+        overflow: 'hidden',
     }
 });
 

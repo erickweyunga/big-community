@@ -1,36 +1,51 @@
 import Colors from "@/constants/Colors";
+import { defaultStyles } from "@/constants/Styles";
 import { Stack } from "expo-router";
 import { Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 const SettingsLayout = () => {
+    const commonScreenOptions = {
+        headerStyle: {
+            backgroundColor: Colors.backgroundLight,
+        },
+        headerShadowVisible: false,
+        headerTintColor: Colors.primary,
+        contentStyle: {
+            backgroundColor: Colors.backgroundLight,
+        },
+        animation: Platform.OS === "ios" ? "default" : "fade_from_bottom",
+    };
+
+    const cardPresentationOptions = {
+        presentation: "card",
+        headerBackTitleVisible: false,
+    };
+
     return (
-        <SafeAreaProvider>
-            <Stack
-                screenOptions={{
-                    headerStyle: {
-                        backgroundColor: Colors.backgroundLight,
-                    },
-                    headerShadowVisible: false,
-                    contentStyle: {
-                        backgroundColor: Colors.backgroundLight,
-                    },
-                    animation: Platform.OS === "ios" ? "default" : "fade_from_bottom",
-                }}
-            >
+        <SafeAreaProvider style={defaultStyles.safeArea}>
+            <Stack screenOptions={commonScreenOptions}>
+                {/* Main settings screen */}
                 <Stack.Screen
                     name="index"
                     options={{
                         title: "Settings",
                         headerLargeTitle: true,
+                        headerSearchBarOptions: {
+                            placeholder: "Search settings...",
+                            headerIconColor: Colors.primary,
+                            tintColor: Colors.primary,
+                            hintTextColor: Colors.gray,
+                        }
                     }}
                 />
 
+                {/* Account section screens */}
                 <Stack.Screen
                     name="profile"
                     options={{
                         title: "Profile",
-                        presentation: "card",
+                        ...cardPresentationOptions,
                     }}
                 />
 
@@ -38,7 +53,7 @@ const SettingsLayout = () => {
                     name="privacy"
                     options={{
                         title: "Privacy",
-                        presentation: "card",
+                        ...cardPresentationOptions,
                     }}
                 />
 
@@ -46,15 +61,24 @@ const SettingsLayout = () => {
                     name="security"
                     options={{
                         title: "Security",
-                        presentation: "card",
+                        ...cardPresentationOptions,
                     }}
                 />
 
                 <Stack.Screen
+                    name="data"
+                    options={{
+                        title: "Data & Storage",
+                        ...cardPresentationOptions,
+                    }}
+                />
+
+                {/* Preferences section screens */}
+                <Stack.Screen
                     name="notifications"
                     options={{
                         title: "Notifications",
-                        presentation: "card",
+                        ...cardPresentationOptions,
                     }}
                 />
 
@@ -62,15 +86,24 @@ const SettingsLayout = () => {
                     name="appearance"
                     options={{
                         title: "Appearance",
-                        presentation: "card",
+                        ...cardPresentationOptions,
                     }}
                 />
 
                 <Stack.Screen
+                    name="language"
+                    options={{
+                        title: "Language",
+                        ...cardPresentationOptions,
+                    }}
+                />
+
+                {/* Support section screens */}
+                <Stack.Screen
                     name="help"
                     options={{
                         title: "Help & Support",
-                        presentation: "card",
+                        ...cardPresentationOptions,
                     }}
                 />
 
@@ -78,7 +111,7 @@ const SettingsLayout = () => {
                     name="about"
                     options={{
                         title: "About",
-                        presentation: "card",
+                        ...cardPresentationOptions,
                     }}
                 />
             </Stack>

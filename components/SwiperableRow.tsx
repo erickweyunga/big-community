@@ -5,6 +5,8 @@ import {
     State,
     GestureHandlerRootView
 } from 'react-native-gesture-handler';
+import Colors from '@/constants/Colors';
+import { defaultStyles } from '@/constants/Styles';
 
 const ACTION_WIDTH = 70;
 
@@ -60,6 +62,7 @@ const SwipeableRow: React.FC<SwipeableRowProps> = ({ children, onDelete, onArchi
         }
     };
 
+    // Close the row
     const closeRow = () => {
         isOpen.current = false;
         Animated.spring(translateX, {
@@ -70,12 +73,14 @@ const SwipeableRow: React.FC<SwipeableRowProps> = ({ children, onDelete, onArchi
         }).start();
     };
 
+    // Transform for the content
     const trans = translateX.interpolate({
         inputRange: [-totalActionsWidth * 2, 0, 1],
         outputRange: [-totalActionsWidth, 0, 0],
         extrapolate: 'clamp',
     });
 
+    // Layout for the actions - absolutely positioned and right aligned
     const renderActions = () => {
         const actions = [];
         let rightOffset = 0;
@@ -91,7 +96,7 @@ const SwipeableRow: React.FC<SwipeableRowProps> = ({ children, onDelete, onArchi
                     ]}
                 >
                     <TouchableOpacity
-                        style={styles.actionButtonInner}
+                        style={[defaultStyles.center, styles.actionButtonInner]}
                         onPress={() => {
                             if (onArchive) onArchive();
                             closeRow();
@@ -108,11 +113,14 @@ const SwipeableRow: React.FC<SwipeableRowProps> = ({ children, onDelete, onArchi
     };
 
     return (
-        <GestureHandlerRootView style={styles.container}>
-            <Animated.View style={styles.container} onLayout={({ nativeEvent }) => {
-                rowHeight.setValue(nativeEvent.layout.height);
-            }}>
-                <View style={[styles.actionsContainer]}>
+        <GestureHandlerRootView style={defaultStyles.container}>
+            <Animated.View
+                style={styles.container}
+                onLayout={({ nativeEvent }) => {
+                    rowHeight.setValue(nativeEvent.layout.height);
+                }}
+            >
+                <View style={styles.actionsContainer}>
                     {renderActions()}
                 </View>
 
@@ -144,7 +152,7 @@ const styles = StyleSheet.create({
     },
     rowContent: {
         width: '100%',
-        backgroundColor: 'white',
+        backgroundColor: Colors.background,
     },
     actionsContainer: {
         position: 'absolute',
@@ -161,11 +169,9 @@ const styles = StyleSheet.create({
     },
     actionButtonInner: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     archiveButton: {
-        backgroundColor: '#4a98f7',
+        backgroundColor: Colors.primary,
     },
     actionText: {
         color: 'white',
