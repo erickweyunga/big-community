@@ -1,23 +1,19 @@
-import { View, Text, KeyboardAvoidingView, Platform, Linking, StyleSheet, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, KeyboardAvoidingView, Platform, Linking, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, TextInput } from 'react-native'
 import React, { useState, useCallback, useMemo } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import Colors from '@/constants/Colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import MaskInput from 'react-native-mask-input';
-
-// Format: +255 xxx xxx xxx
-// Tanzania phone numbers should have exactly 9 digits after the country code
-const TANZANIA_MASK = ['+', '2', '5', '5', ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/];
+import { isClerkAPIResponseError, useSignIn, useSignUp } from '@clerk/clerk-expo';
 
 const Page: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [phoneNumber, setPhoneNumber] = useState<string>('');
-    const [validationError, setValidationError] = useState<string | null>(null);
     const { bottom } = useSafeAreaInsets();
     const router = useRouter();
+    const { isLoaded, signUp, setActive } = useSignUp()
+    const { signIn } = useSignIn();
 
-    // Memoized functions to prevent recreating on each render
     const openPrivacyPolicy = useCallback((): void => {
         Linking.openURL('https://example.com/privacy-policy');
     }, []);
@@ -42,41 +38,84 @@ const Page: React.FC = () => {
 
     const validatePhone = useCallback((rawInput: string): boolean => {
         const digits = processPhoneInput(rawInput);
-
-        if (digits.length !== 9) {
-            setValidationError(`Phone number must be exactly 9 digits`);
-            return false;
-        }
-
-        setValidationError(null);
-        return true;
+        const isValid = /^\d{9}$/.test(digits);
+        return isValid;
     }, [processPhoneInput]);
 
-    const handlePhoneNumberChange = useCallback((unmaskedValue: string): void => {
-        validatePhone(unmaskedValue);
-    }, [validatePhone]);
+    const handlePhoneNumberChange = useCallback((text: string): void => {
+        const digitsOnly = text.replace(/\D/g, '');
+        const processedDigits = processPhoneInput(digitsOnly);
+
+        const formattedDigits = processedDigits.slice(0, 9);
+
+        setPhoneNumber(formattedDigits);
+    }, [processPhoneInput]);
 
     const sendOtp = useCallback(async (): Promise<void> => {
-        const unmaskedNumber = phoneNumber.replace(/\D/g, '');
+        if (!isLoaded) return;
 
-        if (validatePhone(unmaskedNumber)) {
-            const processedNumber = processPhoneInput(unmaskedNumber);
-            console.log('Sending OTP to valid number:', processedNumber);
+        if (phoneNumber.length === 0) {
+            Alert.alert('Invalid Phone Number', 'Please enter a valid phone number');
+            return;
+        }
 
-            const fullInternationalNumber = `+255${processedNumber}`;
-            console.log('Full international format:', fullInternationalNumber);
+        if (validatePhone(phoneNumber)) {
+            const fullInternationalNumber = `+255${phoneNumber}`;
 
-            // Add your API call or navigation here
-            // router.push('/verification');
+            try {
+                await signUp.create({
+                    phoneNumber: fullInternationalNumber,
+                })
+                await signUp.preparePhoneNumberVerification({ strategy: 'phone_code' });
+                router.push(`/verify/${fullInternationalNumber}`);
+            } catch (error) {
+                if (isClerkAPIResponseError(error)) {
+                    if (error.errors[0].code === "form_identifier_exists") {
+                        console.log('Phone number already exists, signing in...');
+                        await trySignIn()
+                    } else {
+                        setLoading(false);
+                        Alert.alert('Error', error.errors[0].message || 'An error occurred. Please try again.');
+                    }
+                }
+            }
         } else {
-            Alert.alert('Invalid Phone Number', validationError || 'Please enter a valid Tanzanian phone number');
+            Alert.alert('Invalid Phone Number', 'Please enter a valid 9-digit Tanzania phone number');
             setLoading(false);
         }
-    }, [phoneNumber, validatePhone, validationError, processPhoneInput]);
+    }, [phoneNumber, validatePhone, router]);
+
+    const trySignIn = useCallback(async () => {
+        const { supportedFirstFactors } = await signIn!.create({
+            identifier: phoneNumber,
+        });
+
+        if (!supportedFirstFactors) {
+            Alert.alert('Error', 'No supported first factors found. Please try again.');
+            return;
+        }
+
+        const firstPhoneFactor = supportedFirstFactors!.find(factor => factor.strategy === 'phone_code');
+
+        if (firstPhoneFactor && 'phoneNumberId' in firstPhoneFactor) {
+            const { phoneNumberId } = firstPhoneFactor;
+            await signIn!.prepareFirstFactor({
+                strategy: 'phone_code',
+                phoneNumberId,
+            });
+
+            router.push(`/verify/${phoneNumber}?signIn=true`);
+            setLoading(false);
+        } else {
+            Alert.alert('Error', 'No phone number found. Please try again.');
+            setLoading(false);
+        }
+
+    }, [signIn, phoneNumber, router]);
 
     const isButtonEnabled = useMemo((): boolean => {
-        return phoneNumber.length > 0 && validationError === null;
-    }, [phoneNumber, validationError]);
+        return phoneNumber.length > 0;
+    }, [phoneNumber]);
 
     const keyboardVerticalOffset = Platform.OS === 'ios' ? 90 : 0;
 
@@ -86,16 +125,16 @@ const Page: React.FC = () => {
         { marginBottom: bottom }
     ], [isButtonEnabled, bottom]);
 
-    const handleContinuePress = useCallback((): void => {
+    const handleContinuePress = useCallback(async () => {
         if (isButtonEnabled) {
             setLoading(true);
-            sendOtp();
-        } else if (validationError) {
-            Alert.alert('Invalid Phone Number', validationError);
+            await sendOtp().finally(() => {
+                // Loading is handled in sendOtp with setTimeout
+            });
         } else {
             Alert.alert('Invalid Phone Number', 'Please enter a valid phone number');
         }
-    }, [isButtonEnabled, sendOtp, validationError]);
+    }, [isButtonEnabled, sendOtp]);
 
     return (
         <KeyboardAvoidingView
@@ -103,10 +142,17 @@ const Page: React.FC = () => {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={keyboardVerticalOffset}
         >
-            <View style={styles.container}>
+            <View style={[StyleSheet.absoluteFill, styles.container]}>
+                {loading && (
+                    <View style={styles.loading}>
+                        <ActivityIndicator size="large" color={Colors.primary} />
+                        <Text style={{ fontSize: 18, margin: 10 }}>
+                            Sending verification code...
+                        </Text>
+                    </View>
+                )}
                 <Text style={styles.description}>
                     BigCommunity will send you a text with a code to verify your phone number.
-                    Message and data rates may apply.
                 </Text>
 
                 <View style={styles.list}>
@@ -116,26 +162,23 @@ const Page: React.FC = () => {
                     </View>
                     <View style={styles.separator} />
                     <View style={styles.phoneInputContainer}>
-                        <MaskInput
+                        <View style={styles.prefixContainer}>
+                            <Text style={styles.prefixText}>+255</Text>
+                        </View>
+                        <TextInput
                             value={phoneNumber}
-                            onChangeText={(masked, unmasked) => {
-                                setPhoneNumber(masked);
-                                handlePhoneNumberChange(unmasked);
-                            }}
-                            mask={TANZANIA_MASK}
-                            placeholder="+255 phone number"
+                            onChangeText={handlePhoneNumberChange}
+                            placeholder="7XX XXX XXX"
                             style={styles.phoneInput}
                             autoFocus
                             placeholderTextColor={Colors.gray}
                             keyboardType="numeric"
+                            maxLength={9}
                         />
                     </View>
-                    {validationError ? (
-                        <Text style={styles.errorText}>{validationError}</Text>
-                    ) : null}
                 </View>
 
-                <Text style={styles.description}>
+                <Text style={{ ...styles.description }}>
                     <Text>
                         You should be{" "}
                     </Text>
@@ -156,7 +199,7 @@ const Page: React.FC = () => {
                     onPress={handleContinuePress}
                 >
                     <Text style={styles.buttonText}>
-                        {loading ? 'Processing...' : 'Continue'}
+                        Continue
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -171,30 +214,28 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        backgroundColor: "#fff",
         padding: 20,
         gap: 20,
+        backgroundColor: '#fff',
     },
     description: {
-        fontSize: 16,
+        fontSize: 14,
         color: Colors.gray,
         textAlign: 'center',
         lineHeight: 22,
     },
     list: {
-        backgroundColor: '#f0f0f0',
+        // backgroundColor: Colors.backeground,
         width: '100%',
         padding: 12,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: Colors.lightGray,
-        borderRadius: 5,
+        borderRadius: 10
     },
     listItem: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 6,
-        marginBottom: 10,
+        marginBottom: 4,
     },
     listItemText: {
         fontSize: 18,
@@ -202,12 +243,23 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     phoneInputContainer: {
-        paddingVertical: 0,
+        paddingVertical: 10,
+        paddingHorizontal: 6,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    prefixContainer: {
+        marginRight: 8,
+    },
+    prefixText: {
+        fontSize: 18,
+        color: '#000',
+        fontWeight: '400',
     },
     phoneInput: {
         fontSize: 18,
         color: '#000',
-        width: '100%',
+        flex: 1,
     },
     link: {
         color: Colors.primary,
@@ -243,6 +295,13 @@ const styles = StyleSheet.create({
         marginTop: 2,
         marginBottom: 2,
     },
+    loading: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: '#fff',
+        zIndex: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    }
 });
 
 export default Page;
