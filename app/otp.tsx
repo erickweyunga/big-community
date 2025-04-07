@@ -85,33 +85,45 @@ const Page: React.FC = () => {
         }
     }, [phoneNumber, validatePhone, router]);
 
-    const trySignIn = useCallback(async () => {
-        const { supportedFirstFactors } = await signIn!.create({
-            identifier: phoneNumber,
-        });
+    const trySignIn = async () => {
+        try {
+            const fullInternationalNumber = `+255${phoneNumber}`;
 
-        if (!supportedFirstFactors) {
-            Alert.alert('Error', 'No supported first factors found. Please try again.');
-            return;
-        }
-
-        const firstPhoneFactor = supportedFirstFactors!.find(factor => factor.strategy === 'phone_code');
-
-        if (firstPhoneFactor && 'phoneNumberId' in firstPhoneFactor) {
-            const { phoneNumberId } = firstPhoneFactor;
-            await signIn!.prepareFirstFactor({
-                strategy: 'phone_code',
-                phoneNumberId,
+            const { supportedFirstFactors } = await signIn!.create({
+                identifier: fullInternationalNumber,
             });
 
-            router.push(`/verify/${phoneNumber}?signIn=true`);
-            setLoading(false);
-        } else {
-            Alert.alert('Error', 'No phone number found. Please try again.');
+            if (!supportedFirstFactors) {
+                Alert.alert('Error', 'No supported first factors found. Please try again.');
+                return;
+            }
+
+            const firstPhoneFactor = supportedFirstFactors.find(factor => factor.strategy === 'phone_code');
+
+            if (firstPhoneFactor && 'phoneNumberId' in firstPhoneFactor) {
+                const { phoneNumberId } = firstPhoneFactor;
+                console.log('Phone number ID:', phoneNumberId);
+                await signIn!.prepareFirstFactor({
+                    strategy: 'phone_code',
+                    phoneNumberId,
+                });
+
+                router.push(`/verify/${fullInternationalNumber}?signIn=true`);
+                setLoading(false);
+            } else {
+                Alert.alert('Error', 'No phone number found. Please try again.');
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error('Sign in error:', error);
+            if (isClerkAPIResponseError(error)) {
+                Alert.alert('Error', error.errors[0].message || 'An error occurred during sign in.');
+            } else {
+                Alert.alert('Error', 'An unexpected error occurred during sign in.');
+            }
             setLoading(false);
         }
-
-    }, [signIn, phoneNumber, router]);
+    }
 
     const isButtonEnabled = useMemo((): boolean => {
         return phoneNumber.length > 0;
