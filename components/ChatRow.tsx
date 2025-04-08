@@ -1,6 +1,6 @@
-import { View, Text, TouchableHighlight, Image, StyleSheet } from 'react-native'
+import { View, Text, TouchableHighlight, Image, StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
-import { useRouter } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import Colors from '@/constants/Colors'
 import { format } from 'date-fns'
 import { defaultStyles } from '@/constants/Styles'
@@ -13,14 +13,19 @@ interface ChatRowProps {
     img: string
     msg: string
     read: boolean
-    unreadCount: number
+    unreadCount: number,
+    phoneNumber?: string
 }
 
-const ChatRow = ({ id, from, date, img, msg, read, unreadCount }: ChatRowProps) => {
+const ChatRow = ({ id, from, date, img, msg, read, unreadCount, phoneNumber }: ChatRowProps) => {
     const router = useRouter();
 
     const handlePress = () => {
         router.push(`/chat/${id}`);
+    };
+
+    const handleProfilePress = () => {
+        router.push(`/(modals)/profile?user_name=${from}&phone_number=${phoneNumber}`);
     };
 
     return (
@@ -34,10 +39,18 @@ const ChatRow = ({ id, from, date, img, msg, read, unreadCount }: ChatRowProps) 
                 onPress={handlePress}
             >
                 <View style={[defaultStyles.item, styles.container]}>
-                    <Image
-                        source={{ uri: img }}
-                        style={styles.avatar}
-                    />
+                    <TouchableOpacity
+                        style={styles.avatarContainer}
+                        activeOpacity={0.7}
+                        onPress={handleProfilePress}
+                        accessibilityLabel={`View ${from}'s profile`}
+                        accessibilityRole="button"
+                    >
+                        <Image
+                            source={{ uri: img }}
+                            style={defaultStyles.avatar}
+                        />
+                    </TouchableOpacity>
                     <View style={styles.contentContainer}>
                         <View style={defaultStyles.rowBetween}>
                             <Text style={defaultStyles.subtitle}>{from}</Text>
@@ -78,10 +91,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         backgroundColor: Colors.background,
     },
-    avatar: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
+    avatarContainer: {
         marginRight: 12,
     },
     contentContainer: {

@@ -44,33 +44,38 @@ function AuthRedirect() {
   const router = useRouter();
   const segments = useSegments();
   const { isLoaded, isSignedIn } = useAuth();
-  const [initialRenderComplete, setInitialRenderComplete] = useState(false);
+  const [initialAuthChecked, setInitialAuthChecked] = useState(false);
+  const [currentMainSegment, setCurrentMainSegment] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setInitialRenderComplete(true);
-    }, 0);
+    if (!isLoaded) return;
 
-    return () => clearTimeout(timeout);
-  }, []);
+    const mainSegment = segments[0];
 
-  useEffect(() => {
-    // Only run this effect after initial render and when auth is loaded
-    if (!initialRenderComplete || !isLoaded) return;
+    if (initialAuthChecked && mainSegment === currentMainSegment) return;
 
-    const inTabsGroup = segments[0] === '(tabs)';
+    setCurrentMainSegment(mainSegment);
 
-    setTimeout(() => {
-      if (isSignedIn && !inTabsGroup) {
-        router.replace('/(tabs)/chats');
-      } else if (!isSignedIn && inTabsGroup) {
-        router.replace('/');
-      }
-    }, 0);
-  }, [isLoaded, isSignedIn, segments, initialRenderComplete, router]);
+    const inTabsGroup = mainSegment === '(tabs)';
+    const isProtectedRoute = inTabsGroup;
+    const isAuthRoute = mainSegment === undefined ||
+      mainSegment === 'otp' ||
+      mainSegment === 'verify';
+
+    if (isSignedIn && isAuthRoute) {
+      router.replace('/(tabs)/chats');
+    } else if (!isSignedIn && isProtectedRoute) {
+      router.replace('/');
+    }
+
+    if (!initialAuthChecked) {
+      setInitialAuthChecked(true);
+    }
+  }, [isLoaded, isSignedIn, segments, router, initialAuthChecked, currentMainSegment]);
 
   return null;
 }
+
 
 /**
  * Internal layout component with font loading
@@ -118,6 +123,11 @@ function RootLayoutNav() {
           }}
         />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(modals)/profile" options={{
+          presentation: 'modal',
+          headerTitle: "Profile",
+          headerTitleAlign: 'center',
+        }} />
         <Stack.Screen name="+not-found" options={{ headerShown: true, title: 'Page Not Found' }} />
       </Stack>
     </>

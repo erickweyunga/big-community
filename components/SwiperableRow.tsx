@@ -7,8 +7,9 @@ import {
 } from 'react-native-gesture-handler';
 import Colors from '@/constants/Colors';
 import { defaultStyles } from '@/constants/Styles';
+import { Ionicons } from '@expo/vector-icons';
 
-const ACTION_WIDTH = 70;
+const ACTION_WIDTH = 100;
 
 interface SwipeableRowProps {
     children: React.ReactNode;
@@ -17,7 +18,7 @@ interface SwipeableRowProps {
 }
 
 const SwipeableRow: React.FC<SwipeableRowProps> = ({ children, onDelete, onArchive }) => {
-    const totalActionsWidth = (onArchive ? ACTION_WIDTH : 0) + (onDelete ? ACTION_WIDTH : 0);
+    const totalActionsWidth = ACTION_WIDTH * 2;
 
     const translateX = useRef(new Animated.Value(0)).current;
     const rowHeight = useRef(new Animated.Value(0)).current;
@@ -36,33 +37,34 @@ const SwipeableRow: React.FC<SwipeableRowProps> = ({ children, onDelete, onArchi
             const dragX = nativeEvent.translationX * direction;
             const dragVelocity = nativeEvent.velocityX * direction;
 
-            const dragThreshold = -totalActionsWidth * 0.5;
-
-            const shouldOpen =
-                !isOpen.current && (dragX < dragThreshold || dragVelocity < -500) ||
-                isOpen.current && dragX > -totalActionsWidth * 0.75;
-
-            if (shouldOpen) {
-                isOpen.current = true;
-                Animated.spring(translateX, {
-                    toValue: -totalActionsWidth * direction,
-                    useNativeDriver: true,
-                    bounciness: 0,
-                    speed: 20
-                }).start();
+            if (isOpen.current) {
+                if (dragX > totalActionsWidth * 0.25 || dragVelocity > 500) {
+                    closeRow();
+                } else {
+                    openRow();
+                }
             } else {
-                isOpen.current = false;
-                Animated.spring(translateX, {
-                    toValue: 0,
-                    useNativeDriver: true,
-                    bounciness: 0,
-                    speed: 20
-                }).start();
+                const dragThreshold = -totalActionsWidth * 0.5;
+
+                if (dragX < dragThreshold || dragVelocity < -500) {
+                    openRow();
+                } else {
+                    closeRow();
+                }
             }
         }
     };
 
-    // Close the row
+    const openRow = () => {
+        isOpen.current = true;
+        Animated.spring(translateX, {
+            toValue: -totalActionsWidth * direction,
+            useNativeDriver: true,
+            bounciness: 0,
+            speed: 20
+        }).start();
+    };
+
     const closeRow = () => {
         isOpen.current = false;
         Animated.spring(translateX, {
@@ -73,26 +75,20 @@ const SwipeableRow: React.FC<SwipeableRowProps> = ({ children, onDelete, onArchi
         }).start();
     };
 
-    // Transform for the content
     const trans = translateX.interpolate({
-        inputRange: [-totalActionsWidth * 2, 0, 1],
-        outputRange: [-totalActionsWidth, 0, 0],
+        inputRange: [-totalActionsWidth * 1, 0, 1],
+        outputRange: [-totalActionsWidth, 0, 1],
         extrapolate: 'clamp',
     });
 
-    // Layout for the actions - absolutely positioned and right aligned
     const renderActions = () => {
-        const actions = [];
-        let rightOffset = 0;
-
-        if (onArchive) {
-            actions.push(
+        return (
+            <>
                 <Animated.View
-                    key="archive"
                     style={[
                         styles.actionButton,
                         styles.archiveButton,
-                        { right: rightOffset }
+                        { right: 0 }
                     ]}
                 >
                     <TouchableOpacity
@@ -102,14 +98,31 @@ const SwipeableRow: React.FC<SwipeableRowProps> = ({ children, onDelete, onArchi
                             closeRow();
                         }}
                     >
+                        <Ionicons name="archive" size={22} color="white" style={defaultStyles.p1} />
                         <Text style={styles.actionText}>Archive</Text>
                     </TouchableOpacity>
                 </Animated.View>
-            );
-            rightOffset += ACTION_WIDTH;
-        }
 
-        return actions;
+                <Animated.View
+                    style={[
+                        styles.actionButton,
+                        styles.deleteButton,
+                        { right: ACTION_WIDTH }
+                    ]}
+                >
+                    <TouchableOpacity
+                        style={[defaultStyles.center, styles.actionButtonInner]}
+                        onPress={() => {
+                            if (onDelete) onDelete();
+                            closeRow();
+                        }}
+                    >
+                        <Ionicons name="trash" size={22} color="white" style={defaultStyles.p1} />
+                        <Text style={styles.actionText}>Delete</Text>
+                    </TouchableOpacity>
+                </Animated.View>
+            </>
+        );
     };
 
     return (
@@ -173,10 +186,14 @@ const styles = StyleSheet.create({
     archiveButton: {
         backgroundColor: Colors.primary,
     },
+    deleteButton: {
+        backgroundColor: 'red',
+    },
     actionText: {
         color: 'white',
         fontWeight: '600',
-        fontSize: 14,
+        fontSize: 12,
+        marginTop: 2,
     }
 });
 

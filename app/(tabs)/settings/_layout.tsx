@@ -40,8 +40,7 @@ const SettingsLayout = () => {
                     }}
                 />
 
-                {/* Account section screens */}
-                <Stack.Screen
+                {/* <Stack.Screen
                     name="profile"
                     options={{
                         title: "Profile",
@@ -73,7 +72,6 @@ const SettingsLayout = () => {
                     }}
                 />
 
-                {/* Preferences section screens */}
                 <Stack.Screen
                     name="notifications"
                     options={{
@@ -98,7 +96,6 @@ const SettingsLayout = () => {
                     }}
                 />
 
-                {/* Support section screens */}
                 <Stack.Screen
                     name="help"
                     options={{
@@ -113,7 +110,7 @@ const SettingsLayout = () => {
                         title: "About",
                         ...cardPresentationOptions,
                     }}
-                />
+                /> */}
             </Stack>
         </SafeAreaProvider>
     );

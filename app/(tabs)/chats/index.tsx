@@ -66,7 +66,8 @@ const Page = () => {
             const filtered = chats.filter(
                 chat =>
                     chat.from.toLowerCase().includes(text.toLowerCase()) ||
-                    chat.msg.toLowerCase().includes(text.toLowerCase())
+                    chat.msg.toLowerCase().includes(text.toLowerCase()) ||
+                    chat.phoneNumber?.toLowerCase().includes(text.toLowerCase())
             );
             setFilteredChats(filtered);
         } else {

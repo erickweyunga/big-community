@@ -18,10 +18,8 @@ interface TabBarProps {
 
 const CustomTabBar = ({ state }: TabBarProps) => {
     const router = useRouter();
-    const pathname = usePathname();
     const slideAnim = useRef(new Animated.Value(0)).current;
 
-    // Map routes to icon components and titles
     const tabs = [
         {
             name: 'updates',
@@ -50,28 +48,8 @@ const CustomTabBar = ({ state }: TabBarProps) => {
         },
     ];
 
-    // Animate the sliding indicator
-    useEffect(() => {
-        Animated.spring(slideAnim, {
-            toValue: state.index * (width / tabs.length),
-            useNativeDriver: true,
-            friction: 8,
-            tension: 100
-        }).start();
-    }, [state.index]);
-
     return (
         <View style={styles.container}>
-            {/* Sliding indicator */}
-            <Animated.View
-                style={[
-                    styles.slider,
-                    {
-                        transform: [{ translateX: slideAnim }],
-                        width: width / tabs.length
-                    }
-                ]}
-            />
 
             {/* Tab buttons */}
             {tabs.map((tab, index) => {
@@ -82,7 +60,7 @@ const CustomTabBar = ({ state }: TabBarProps) => {
                     <TouchableOpacity
                         key={tab.name}
                         style={styles.tab}
-                        onPress={() => router.replace(`/(tabs)/${tab.name}`)}
+                        onPress={() => router.replace(`/(tabs)/${tab.name}` as any)}
                         activeOpacity={0.7}
                     >
                         {tab.icon(color, 24)}

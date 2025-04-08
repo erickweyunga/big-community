@@ -1,0 +1,293 @@
+[
+  {
+    "id": "9a1b0bf5-6cac-4ea6-a0fb-bf139df9a2cf",
+    "name": "Aguilar Martinez",
+    "username": "aguilar_official",
+    "img": "https://i.pravatar.cc/150?u=aguilarduke@marketoid.com",
+    "phoneNumber": "+255712345678",
+    "email": "aguilar.martinez@example.com",
+    "bio": "Tech entrepreneur and podcast host. Building the future of mobile apps in Tanzania. Coffee addict ☕",
+    "followers": 15642,
+    "following": 842,
+    "posts": 347,
+    "likes": 28936,
+    "verified": true,
+    "subscribers": 8750,
+    "links": {
+      "website": "https://aguilartech.com",
+      "youtube": "https://youtube.com/aguilartech",
+      "twitter": "https://twitter.com/aguilar_official"
+    },
+    "location": "Dar es Salaam, Tanzania",
+    "joinDate": "March 2017",
+    "occupation": "CEO at TechNova Solutions",
+    "interests": [
+      "Technology",
+      "Entrepreneurship",
+      "Podcasting",
+      "Innovation"
+    ]
+  },
+  {
+    "id": "16d121b0-bad3-475a-a1d3-57060a25e3c2",
+    "name": "Naomi Baxter",
+    "username": "naomi_travels",
+    "img": "https://i.pravatar.cc/150?u=baxterduke@marketoid.com",
+    "phoneNumber": "+255723456789",
+    "email": "naomi.baxter@example.com",
+    "bio": "Travel blogger | Photographer | Exploring Africa one country at a time 🌍 | Based in Tanzania",
+    "followers": 42830,
+    "following": 1256,
+    "posts": 528,
+    "likes": 156280,
+    "verified": true,
+    "subscribers": 22400,
+    "links": {
+      "website": "https://naomitravels.blog",
+      "instagram": "https://instagram.com/naomi_travels",
+      "youtube": "https://youtube.com/naomitravels"
+    },
+    "location": "Arusha, Tanzania",
+    "joinDate": "January 2019",
+    "occupation": "Travel Blogger & Photographer",
+    "interests": [
+      "Travel",
+      "Photography",
+      "Culture",
+      "Wildlife",
+      "Adventure"
+    ]
+  },
+  {
+    "id": "594d6cfc-5f69-4e63-ba2b-6eb318fc5d7d",
+    "name": "Bonnie Williams",
+    "username": "chef_bonnie",
+    "img": "https://i.pravatar.cc/150?u=bonnieduke@marketoid.com",
+    "phoneNumber": "+255734567890",
+    "email": "bonnie.williams@example.com",
+    "bio": "Professional chef sharing authentic East African cuisine 🍲 | Cookbook author | Food photography enthusiast",
+    "followers": 31285,
+    "following": 675,
+    "posts": 412,
+    "likes": 89764,
+    "verified": false,
+    "subscribers": 15800,
+    "links": {
+      "website": "https://bonniecooks.com",
+      "instagram": "https://instagram.com/chef_bonnie",
+      "facebook": "https://facebook.com/chefbonnie"
+    },
+    "location": "Mwanza, Tanzania",
+    "joinDate": "April 2020",
+    "occupation": "Chef & Food Writer",
+    "interests": [
+      "Cooking",
+      "Food Photography",
+      "Culinary Arts",
+      "Local Cuisine"
+    ]
+  },
+  {
+    "id": "d90b9cac-aca0-4b8f-9ac5-3b7c228e3657",
+    "name": "Dr. Myrna Patel",
+    "username": "dr_myrna_health",
+    "img": "https://i.pravatar.cc/150?u=myrnaduke@marketoid.com",
+    "phoneNumber": "+255745678901",
+    "email": "dr.myrna.patel@example.com",
+    "bio": "Medical Doctor | Health educator | Making healthcare accessible through education | Wellness advocate 💉❤️",
+    "followers": 28450,
+    "following": 352,
+    "posts": 289,
+    "likes": 76320,
+    "verified": true,
+    "subscribers": 18500,
+    "links": {
+      "website": "https://drmyrnahealth.com",
+      "youtube": "https://youtube.com/drmyrnahealth",
+      "twitter": "https://twitter.com/dr_myrna_health"
+    },
+    "location": "Dodoma, Tanzania",
+    "joinDate": "September 2018",
+    "occupation": "Medical Doctor & Health Educator",
+    "interests": [
+      "Healthcare",
+      "Wellness",
+      "Medical Education",
+      "Public Health"
+    ]
+  },
+  {
+    "id": "45ba88b0-3d9e-4ca7-a93a-45b7db9d7100",
+    "name": "Terra Mkandara",
+    "username": "terra_wildlife",
+    "img": "https://i.pravatar.cc/150?u=terraduke@marketoid.com",
+    "phoneNumber": "+255756789012",
+    "email": "terra.mkandara@example.com",
+    "bio": "Wildlife conservationist | Filmmaker | Working to protect Tanzania's natural heritage 🐘🦁 | National Geographic contributor",
+    "followers": 67890,
+    "following": 534,
+    "posts": 378,
+    "likes": 197450,
+    "verified": true,
+    "subscribers": 42600,
+    "links": {
+      "website": "https://terrawildlife.org",
+      "instagram": "https://instagram.com/terra_wildlife",
+      "youtube": "https://youtube.com/terramkandara"
+    },
+    "location": "Serengeti, Tanzania",
+    "joinDate": "May 2016",
+    "occupation": "Wildlife Filmmaker & Conservationist",
+    "interests": [
+      "Wildlife Conservation",
+      "Filmmaking",
+      "Environmental Protection",
+      "Photography"
+    ]
+  },
+  {
+    "id": "874933b3-b7ba-47e0-8bcd-40defa550c68",
+    "name": "Bessie Mwangi",
+    "username": "bessie_beats",
+    "img": "https://i.pravatar.cc/150?u=bessieduke@marketoid.com",
+    "phoneNumber": "+255767890123",
+    "email": "bessie.mwangi@example.com",
+    "bio": "Music producer & DJ | Bringing Tanzanian beats to the world 🎧 | Founder of AfroBeats Tanzania",
+    "followers": 52340,
+    "following": 1087,
+    "posts": 256,
+    "likes": 186730,
+    "verified": false,
+    "subscribers": 31200,
+    "links": {
+      "website": "https://bessiebeats.com",
+      "instagram": "https://instagram.com/bessie_beats",
+      "spotify": "https://open.spotify.com/artist/bessiebeats"
+    },
+    "location": "Mbeya, Tanzania",
+    "joinDate": "July 2017",
+    "occupation": "Music Producer & DJ",
+    "interests": [
+      "Music Production",
+      "DJing",
+      "African Music",
+      "Sound Engineering"
+    ]
+  },
+  {
+    "id": "f09bb250-6e5b-4d98-a849-93e0fdc1a351",
+    "name": "Ella Kiswahili",
+    "username": "ellateaches",
+    "img": "https://i.pravatar.cc/150?u=elladuke@marketoid.com",
+    "phoneNumber": "+255778901234",
+    "email": "ella.kiswahili@example.com",
+    "bio": "Language educator | Teaching Swahili to the world 🌍 | Author of 'Speak Swahili Now' | Creator of SwahiliEasy app",
+    "followers": 23560,
+    "following": 487,
+    "posts": 342,
+    "likes": 67890,
+    "verified": true,
+    "subscribers": 19800,
+    "links": {
+      "website": "https://ellateaches.com",
+      "youtube": "https://youtube.com/ellateaches",
+      "twitter": "https://twitter.com/ellateaches"
+    },
+    "location": "Tanga, Tanzania",
+    "joinDate": "October 2019",
+    "occupation": "Language Educator & App Developer",
+    "interests": [
+      "Language Education",
+      "App Development",
+      "Teaching",
+      "Swahili Culture"
+    ]
+  },
+  {
+    "id": "c4ae3078-4df8-4c0d-b55f-73e02622ee0f",
+    "name": "Cain Johnson",
+    "username": "cain_fitness",
+    "img": "https://i.pravatar.cc/150?u=cainduke@marketoid.com",
+    "phoneNumber": "+255789012345",
+    "email": "cain.johnson@example.com",
+    "bio": "Fitness coach | Nutritionist | Helping Tanzanians get fit and healthy 💪 | Creator of the TzFit workout program",
+    "followers": 78920,
+    "following": 823,
+    "posts": 647,
+    "likes": 234560,
+    "verified": true,
+    "subscribers": 56700,
+    "links": {
+      "website": "https://cainfitness.com",
+      "instagram": "https://instagram.com/cain_fitness",
+      "youtube": "https://youtube.com/cainfitness"
+    },
+    "location": "Morogoro, Tanzania",
+    "joinDate": "February 2018",
+    "occupation": "Fitness Coach & Nutritionist",
+    "interests": [
+      "Fitness",
+      "Nutrition",
+      "Workout Programs",
+      "Health"
+    ]
+  },
+  {
+    "id": "c6650dc2-2fa3-4415-9fb7-239ccc7983d0",
+    "name": "Herring Mbeki",
+    "username": "herring_code",
+    "img": "https://i.pravatar.cc/150?u=herringduke@marketoid.com",
+    "phoneNumber": "+255790123456",
+    "email": "herring.mbeki@example.com",
+    "bio": "Software developer | Coding instructor | Building Tanzania's tech future one line of code at a time 💻 | TechAfrica fellow",
+    "followers": 43210,
+    "following": 512,
+    "posts": 289,
+    "likes": 124680,
+    "verified": false,
+    "subscribers": 28500,
+    "links": {
+      "website": "https://herringcode.dev",
+      "github": "https://github.com/herringcode",
+      "youtube": "https://youtube.com/herringcode"
+    },
+    "location": "Bukoba, Tanzania",
+    "joinDate": "June 2020",
+    "occupation": "Software Developer & Coding Instructor",
+    "interests": [
+      "Programming",
+      "Web Development",
+      "Mobile Apps",
+      "Tech Education"
+    ]
+  },
+  {
+    "id": "a8c98568-690f-43aa-b188-0d13ff10dbde",
+    "name": "Jerri Kariuki",
+    "username": "design_jerri",
+    "img": "https://i.pravatar.cc/150?u=jerriduke@marketoid.com",
+    "phoneNumber": "+255701234567",
+    "email": "jerri.kariuki@example.com",
+    "bio": "UX/UI designer | Creating beautiful digital experiences | Design consultant for African startups 🎨 | 7+ years in design",
+    "followers": 34760,
+    "following": 728,
+    "posts": 312,
+    "likes": 86420,
+    "verified": true,
+    "subscribers": 12300,
+    "links": {
+      "website": "https://jerridesigns.com",
+      "dribbble": "https://dribbble.com/design_jerri",
+      "behance": "https://behance.net/jerrikariuki"
+    },
+    "location": "Kigoma, Tanzania",
+    "joinDate": "November 2017",
+    "occupation": "UX/UI Designer & Design Consultant",
+    "interests": [
+      "Design",
+      "User Experience",
+      "Graphic Design",
+      "Digital Art"
+    ]
+  }
+]

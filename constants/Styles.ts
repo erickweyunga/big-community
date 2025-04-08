@@ -69,7 +69,7 @@ export const defaultStyles = StyleSheet.create({
   sectionTitle: {
     fontSize: 17,
     fontWeight: "600",
-    marginHorizontal: 16,
+    marginHorizontal: 3,
     marginVertical: 8,
     color: Colors.gray,
   },
@@ -195,6 +195,8 @@ export const defaultStyles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
+    borderWidth: 0.5,
+    borderColor: Colors.link,
   },
   avatarSmall: {
     width: 36,

@@ -40,20 +40,20 @@ const Page = () => {
                 ]
             );
         } else {
-            router.push(`/settings/${id}`);
+            router.push(`/`);
         }
     };
 
     const renderSection = (title: string, data: SettingsItem[]) => (
-        <View style={[defaultStyles.block, defaultStyles.mb3]}>
-            <Text style={defaultStyles.sectionTitle}>{title}</Text>
+        <View style={[defaultStyles.mb3]}>
+            <Text style={[defaultStyles.sectionTitle]}>{title}</Text>
             <FlatList
                 data={data}
                 scrollEnabled={false}
                 ItemSeparatorComponent={() => <View style={defaultStyles.separator} />}
                 renderItem={({ item }) => (
                     <TouchableOpacity
-                        style={defaultStyles.item}
+                        style={[defaultStyles.item, defaultStyles.px1, defaultStyles.py4]}
                         activeOpacity={0.7}
                         onPress={() => handleItemPress(item.id)}
                     >
